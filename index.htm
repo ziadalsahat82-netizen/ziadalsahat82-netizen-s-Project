@@ -197,7 +197,7 @@ const FIREBASE_CONFIG = {
   measurementId: "G-5VH0NDW3C4"
 };
 const USE_STORAGE=false; /* اجعلها true فقط بعد تفعيل Storage (يتطلب خطة Blaze) لرفع الفيديو */
-const fb=(window.firebase&&!FIREBASE_CONFIG.apiKey.startsWith("PASTE"))?firebase.initializeApp(FIREBASE_CONFIG):null;
+const fb=(window.firebase&&!FIREBASE_CONFIG.apiKey.startsWith("5QGJ0BxGUOMJhrHXg23gKGfU9192"))?firebase.initializeApp(FIREBASE_CONFIG):null;
 const auth=fb?firebase.auth():null,fs=fb?firebase.firestore():null,stg=(fb&&USE_STORAGE)?firebase.storage():null;
 let mem=[],file=null,rows=[];
 
