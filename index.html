@@ -303,7 +303,7 @@ function renderReq(){
   $("cnt").innerHTML=STATUS.map((x,i)=>`<span class="tg s${i}">${x}: ${rows.filter(o=>o.status===x).length}</span>`).join("");
   const l=rows.filter(o=>(!s||o.status===s)&&(!t||o.type===t)&&(!q||[o.name,o.phone,o.id,o.desc].join(" ").toLowerCase().includes(q)));
   $("ls").innerHTML=l.length?l.map(o=>{
-    const wa="https://wa.me/2"+o.phone.replace(/^0/,"");
+    const wa="https://wa.me/20"+o.phone.replace(/^0/,"");
     const md=o.media?(o.media.kind==="video"?`<video src="${esc(o.media.url)}" controls></video>`:`<img src="${esc(o.media.url)}" alt="">`):"";
     return`<div class="o"><div class="h"><b>${esc(o.name)} — <span dir="ltr">${esc(o.phone)}</span></b><span class="tg">${esc(o.id)}</span></div>
 <div style="margin-top:6px"><span class="tg">${esc(o.type)}</span> <span class="tg s${Math.max(0,STATUS.indexOf(o.status))}">${esc(o.status)}</span> <small style="color:var(--mut)">${new Date(o.createdAt).toLocaleString("ar-EG")}</small></div>
@@ -329,7 +329,7 @@ function renderTech(){
   $("cnt").innerHTML=TSTATUS.map((x,i)=>`<span class="tg ${TCLS[i]}">${x}: ${trows.filter(o=>o.status===x).length}</span>`).join("");
   const l=trows.filter(o=>(!s||o.status===s)&&(!t||o.specialty===t)&&(!q||[o.name,o.phone,o.id,o.about].join(" ").toLowerCase().includes(q)));
   $("ls").innerHTML=l.length?l.map(o=>{
-    const wa="https://wa.me/2"+o.phone.replace(/^0/,"");
+    const wa="https://wa.me/20"+o.phone.replace(/^0/,"");
     return`<div class="o"><div class="h"><b>${esc(o.name)} — <span dir="ltr">${esc(o.phone)}</span></b><span class="tg">${esc(o.id)}</span></div>
 <div style="margin-top:6px"><span class="tg">${esc(o.specialty)}</span> <span class="tg ${TCLS[Math.max(0,TSTATUS.indexOf(o.status))]}">${esc(o.status)}</span> <small style="color:var(--mut)">خبرة: ${esc(o.exp)} — ${new Date(o.createdAt).toLocaleString("ar-EG")}</small></div>
 ${o.about?`<p style="margin:8px 0">${esc(o.about)}</p>`:""}
@@ -412,7 +412,7 @@ function renderPT(){
 }
 if(fs)fs.collection("public_techs").onSnapshot(sn=>{pubs=sn.docs.map(d=>({id:d.id,...d.data()}));renderPT();if(!$("admin").hidden)render()},()=>{});
 function extra(o){
-  const base=location.origin+location.pathname,ph="2"+o.phone.replace(/^0/,"");
+  const base=location.origin+location.pathname,ph="20"+o.phone.replace(/^0/,"");
   const pay="تم توفير فني لطلبك رقم "+o.id+" ✅\nلتأكيد الطلب حوّل "+FEE+" جنيه على "+PAY_METHOD+" رقم "+PAY_NUMBER+"، وابعت صورة التحويل على واتساب: https://wa.me/"+TEAM_WHATSAPP;
   const rate="شكرًا لاختيارك هاتلي فني 🙏\nقيّم الفني من هنا: "+base+"#rate="+o.id;
   const sel='<select data-asg="'+esc(o.id)+'"><option value="">الفني المعيّن</option>'+pubs.map(p=>'<option value="'+esc(p.id)+'"'+(o.tech&&o.tech.id===p.id?" selected":"")+">"+esc(p.name)+" - "+esc(p.specialty)+"</option>").join("")+"</select>";
