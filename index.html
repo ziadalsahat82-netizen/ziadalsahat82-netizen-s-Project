@@ -364,7 +364,7 @@ $("jf").onsubmit=async e=>{
   catch(x){$("jfe").textContent="تعذر إرسال الطلب، حاول مرة أخرى";$("jb").disabled=false;$("jb").textContent="إرسال طلب الانضمام";return}
   $("jno").textContent=id;$("jf").reset();$("jb").disabled=false;$("jb").textContent="إرسال طلب الانضمام";$("jf").hidden=true;$("jok").hidden=false;
 };
-
+  
 /* ===== الاتصال بـ Firebase ===== */
 async function insertRow(t,o){
   if(!fs){(t==="requests"?mem:tmem).unshift(o);return}
