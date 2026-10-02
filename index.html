@@ -141,7 +141,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc);box
 <div id="ls"></div>
 <button class="btn s p" id="ab">رجوع للموقع</button> <button class="btn s o" id="lo">تسجيل الخروج</button>
 </section>
-<footer><a id="fw" class="btn s o" target="_blank" rel="noopener" hidden style="margin-bottom:12px">تواصل معنا على واتساب</a><div class="fl"><svg><use href="#ic"/></svg><span>هاتلي <b>فني</b></span></div>© هاتلي فني — منيا القمح والقرى المجاورة</footer>
+<footer><a id="fw" class="btn s o" target="_blank" rel="noopener" hidden style="margin-bottom:12px">تواصل معنا على واتساب</a><a id="fbl" class="btn s o" target="_blank" rel="noopener" hidden style="margin:0 6px 12px">تابعنا على فيسبوك</a><div class="fl"><svg><use href="#ic"/></svg><span>هاتلي <b>فني</b></span></div>© هاتلي فني — منيا القمح والقرى المجاورة</footer>
 
 <div class="ov" id="ov" hidden><div class="md">
 <button class="x" id="cl" aria-label="إغلاق">✕</button>
@@ -405,6 +405,7 @@ $("ab").addEventListener("click",()=>history.replaceState(null,"",location.pathn
 /* ===== الفنيين المعتمدين / الدفع / التقييمات ===== */
 $("feeNote").textContent="رسوم الخدمة "+FEE+" جنيه، وبتتدفع بعد ما نوفرلك الفني.";
 if(/^\d{11,15}$/.test(TEAM_WHATSAPP)){$("fw").href="https://wa.me/"+TEAM_WHATSAPP;$("fw").hidden=false}
+if(typeof FACEBOOK_URL!=="undefined"&&/^https?:\/\//.test(FACEBOOK_URL)){$("fbl").href=FACEBOOK_URL;$("fbl").hidden=false}
 function renderPT(){
   $("ptw").hidden=!pubs.length;
   $("pt").innerHTML=pubs.map(p=>{const n=p.ratingCount||0,a=n?(p.ratingSum/n).toFixed(1):null,ic=(TYPES.find(t=>t[1]===p.specialty)||["🛠️"])[0];
