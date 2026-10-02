@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>هاتلي فني</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230E7C66'/%3E%3Cpath d='M32 8C22 8 15 15.5 15 24.5 15 36 32 54 32 54S49 36 49 24.5C49 15.5 42 8 32 8Z' fill='%23F59E0B'/%3E%3Ccircle cx='32' cy='24' r='6.6' fill='%23fff'/%3E%3C/svg%3E">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--l1:#0E7C66;--l2:#F59E0B;--pri:#0B2A5B;--pri2:#123d82;--acc:#F97316;--acc2:#ea580c;--bg:#F4F6FA;--card:#fff;--tx:#12203a;--mut:#64708a;--bd:#e0e5ee;--err:#c0392b;--ok:#15803d;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:Cairo,Tahoma,Arial,sans-serif;line-height:1.7}
+.w{max-width:1080px;margin:auto;padding:0 18px}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:#ffffffee;backdrop-filter:blur(8px);border-bottom:1px solid var(--bd)}
+nav .w{display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:24px;color:var(--l1);cursor:pointer}
+.logo svg{width:40px;height:40px}.logo b{color:var(--l2)}
+.nr{display:flex;align-items:center;gap:10px}
+.lk{background:none;border:0;color:var(--mut);font:600 14px Cairo,sans-serif;cursor:pointer}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--acc);color:#fff;border:0;border-radius:14px;padding:15px 32px;font:800 19px Cairo,sans-serif;cursor:pointer;box-shadow:0 10px 24px #f973164d;transition:transform .2s,box-shadow .2s,background .2s;text-decoration:none}
+.btn:hover{transform:translateY(-2px);background:var(--acc2)}.btn:active{transform:scale(.98)}
+.btn.s{padding:9px 18px;font-size:15px;border-radius:11px;box-shadow:none}
+.btn.p{background:var(--pri);box-shadow:none}.btn.p:hover{background:var(--pri2)}
+.btn.o{background:#fff;color:var(--pri);border:1.5px solid var(--bd);box-shadow:none}
+.btn[disabled]{opacity:.6;pointer-events:none}
+.hero{position:relative;overflow:hidden;background:linear-gradient(150deg,#0B2A5B,#0a1f47 70%);color:#fff;padding:72px 0 88px;text-align:center}
+.hero h1{margin:0 auto 14px;font-size:clamp(32px,7vw,56px);line-height:1.3;max-width:760px}.hero h1 span{color:#ffb070}
+.hero p{margin:0 auto 30px;max-width:560px;font-size:clamp(16px,3.2vw,21px);opacity:.9}
+.bl{position:absolute;border-radius:50%;filter:blur(2px);opacity:.18;animation:fl 9s ease-in-out infinite}
+.bl.a{width:280px;height:280px;background:var(--acc);top:-80px;left:-60px}.bl.b{width:200px;height:200px;background:#4f8dff;bottom:-60px;right:-40px;animation-delay:-4s}
+@keyframes fl{50%{transform:translateY(24px) scale(1.06)}}
+.pills{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:28px;font-size:14px}
+.pills span{background:#ffffff1a;border:1px solid #ffffff2e;border-radius:99px;padding:5px 14px}
+h2.t{text-align:center;margin:56px 0 6px;font-size:clamp(24px,4.5vw,32px);color:var(--pri)}
+p.sub{text-align:center;color:var(--mut);margin:0 0 26px}
+.g{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.g.st{grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+.c{background:var(--card);border:1px solid var(--bd);border-radius:18px;padding:20px 14px;text-align:center;transition:transform .25s,box-shadow .25s,border-color .25s;font-weight:600}
+.c:hover{transform:translateY(-5px);box-shadow:0 14px 30px #0b2a5b1a;border-color:#f9731666}
+.c .i{width:54px;height:54px;border-radius:16px;background:#eef3fc;display:grid;place-items:center;margin:0 auto 10px;font-size:27px}
+.c .n{width:36px;height:36px;border-radius:50%;background:var(--acc);color:#fff;display:grid;place-items:center;margin:0 auto 8px;font-weight:800}
+.c.big{padding:26px 18px}.c.big h3{margin:6px 0 4px;color:var(--pri)}.c.big p{margin:0;color:var(--mut);font-weight:400;font-size:15px}
+.cta{margin:56px 0 40px;background:linear-gradient(135deg,var(--pri),var(--pri2));color:#fff;border-radius:24px;padding:38px 20px;text-align:center}
+.cta h3{margin:0 0 16px;font-size:clamp(22px,4vw,30px)}
+footer{text-align:center;color:var(--mut);padding:24px 0 36px;font-size:14px}
+.rv{opacity:0;transform:translateY(22px);transition:opacity .6s,transform .6s}.rv.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
+
+/* modal */
+.ov{position:fixed;inset:0;z-index:50;background:#0b1a3a99;display:flex;align-items:center;justify-content:center;padding:16px;animation:fd .2s}
+.md{background:#fff;border-radius:22px;width:100%;max-width:600px;max-height:100%;overflow:auto;padding:22px;animation:up .3s;position:relative}
+@keyframes fd{from{opacity:0}}@keyframes up{from{transform:translateY(30px);opacity:0}}
+@media(max-width:600px){.ov{padding:0;align-items:flex-end}.md{border-radius:22px 22px 0 0;max-height:94%}}
+.x{position:absolute;top:12px;left:12px;background:var(--bg);border:0;border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer}
+.md h3{margin:0 0 4px;color:var(--pri);font-size:24px}
+label{display:block;font-weight:600;margin:14px 0 4px;font-size:15px}label small{color:var(--mut);font-weight:400}
+input,select,textarea{width:100%;font:inherit;color:var(--tx);background:#f8f9fc;border:1.5px solid var(--bd);border-radius:12px;padding:11px 13px}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px #f9731626;background:#fff}
+.bad{border-color:var(--err)!important}.er{color:var(--err);font-size:13px}
+.r2{display:grid;gap:10px;grid-template-columns:1fr 1fr}
+.up{border:2px dashed var(--bd);border-radius:14px;padding:14px;text-align:center;cursor:pointer;color:var(--mut);background:#f8f9fc}
+.up:hover{border-color:var(--acc)}
+.pv img,.pv video{max-width:100%;max-height:200px;border-radius:12px;margin-top:10px}
+.ok{text-align:center;padding:14px 4px}.ok .ck{font-size:54px;animation:pop .5s}@keyframes pop{from{transform:scale(0)}}
+.no{font-size:28px;font-weight:800;color:var(--acc);direction:ltr;letter-spacing:1px}
+
+/* admin */
+.tg{display:inline-block;padding:2px 11px;border-radius:99px;background:#eef3fc;color:var(--pri);font-size:13px;font-weight:600}
+.tg.s0{background:#fff1e6;color:var(--acc2)}.tg.s1{background:#fef3c7;color:#92400e}.tg.s2{background:#dbeafe;color:#1e40af}.tg.s3{background:#dcfce7;color:var(--ok)}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.bar>*{flex:1 1 160px}
+.o{background:#fff;border:1px solid var(--bd);border-radius:16px;padding:16px;margin-bottom:12px;animation:up .3s}
+.o .h{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center}
+.o .a{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}.o .a select{width:auto}
+.o img,.o video{max-width:100%;max-height:200px;border-radius:12px;margin-top:8px}
+.dm{background:#fef3c7;color:#5b3a00;padding:9px 13px;border-radius:12px;font-size:14px;margin:12px 0}
+[hidden]{display:none!important}
+.hl{width:88px;height:88px;border-radius:24px;box-shadow:0 0 0 5px #ffffff26,0 16px 36px #0006;margin-bottom:18px;animation:fl 7s ease-in-out infinite}
+.fl{display:flex;align-items:center;justify-content:center;gap:8px;font-weight:800;font-size:20px;color:var(--l1);margin-bottom:6px}.fl svg{width:30px;height:30px}.fl b{color:var(--l2)}
+.jn{margin:56px 0 0;background:#fff;border:1px solid var(--bd);border-radius:24px;padding:28px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}.jn h3{margin:0 0 4px;color:var(--pri);font-size:24px}.jn p{margin:0;color:var(--mut)}
+.tabs{display:flex;gap:8px;margin:10px 0}.tabs button{flex:1;padding:10px;border:1.5px solid var(--bd);background:#fff;border-radius:12px;font:700 15px Cairo,sans-serif;cursor:pointer}.tabs button.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><symbol id="ic" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="var(--l1)"/><path d="M32 8C22 8 15 15.5 15 24.5 15 36 32 54 32 54S49 36 49 24.5C49 15.5 42 8 32 8Z" fill="var(--l2)"/><circle cx="32" cy="24" r="9.5" fill="none" stroke="#fff" stroke-width="3.6" stroke-dasharray="4.6 4.6"/><circle cx="32" cy="24" r="6.6" fill="#fff"/><circle cx="32" cy="24" r="2.7" fill="var(--l2)"/><path d="M42 46 55 58" stroke="#fff" stroke-width="5" stroke-linecap="round"/><circle cx="40" cy="44" r="5" fill="none" stroke="#fff" stroke-width="3"/></symbol></svg>
+
+<nav><div class="w">
+<div class="logo" id="lg"><svg><use href="#ic"/></svg><span>هاتلي <b>فني</b></span></div>
+<div class="nr"><button class="lk" data-join>انضم كفني</button><button class="btn s" data-open>اطلب فني</button></div>
+</div></nav>
+
+<main id="home">
+<section class="hero"><div class="bl a"></div><div class="bl b"></div><div class="w" style="position:relative">
+<svg class="hl" aria-label="هاتلي فني"><use href="#ic"/></svg>
+<h1>محتاج فني؟ <span>إحنا نوصلك بالفني المناسب</span></h1>
+<p>ابعت لنا تفاصيل المشكلة، وإحنا هنتولى البحث عن الفني المناسب في منطقتك.</p>
+<button class="btn" data-open>اطلب فني الآن ←</button>
+<div class="pills"><span>📍 منيا القمح والقرى المجاورة</span><span>⚡ طلب في أقل من دقيقة</span><span>📞 نتواصل معاك بنفسنا</span></div>
+</div></section>
+<div class="w">
+<h2 class="t rv">خدماتنا</h2><p class="sub rv">كل الفنيين اللي محتاجهم في مكان واحد</p>
+<div class="g" id="svc"></div>
+<h2 class="t rv">كيف تعمل الخدمة؟</h2><p class="sub rv">تلات خطوات وبس</p>
+<div class="g st">
+<div class="c big rv"><div class="n">1</div><div class="i" style="margin:8px auto">📝</div><h3>ابعت المشكلة</h3><p>اكتب المشكلة وارفع صورة أو فيديو يوضحها</p></div>
+<div class="c big rv"><div class="n">2</div><div class="i" style="margin:8px auto">🔎</div><h3>إحنا نبحث عن الفني المناسب</h3><p>فريقنا يراجع طلبك ويختار الأنسب لمشكلتك</p></div>
+<div class="c big rv"><div class="n">3</div><div class="i" style="margin:8px auto">📞</div><h3>الفني يتواصل معاك</h3><p>يتفق معاك على الموعد وييجي لحد باب البيت</p></div>
+</div>
+<div class="jn rv"><div><h3>🧰 أنت فني وعايز شغل؟</h3><p>قدّم معانا وهنتواصل معاك أول ما يبقى في طلبات مناسبة لتخصصك.</p></div><button class="btn p" data-join>قدّم كفني</button></div>
+<div class="cta rv"><h3>جاهز نحل مشكلتك؟</h3><button class="btn" data-open>اطلب فني الآن</button></div>
+</div></main>
+
+<section id="login" class="w" hidden><form id="lf" class="md" style="max-width:420px;margin:60px auto;box-shadow:0 14px 40px #0b2a5b1f" novalidate>
+<h3>دخول فريق هاتلي فني</h3>
+<label for="le1">البريد الإلكتروني</label><input id="le1" type="email" dir="ltr" autocomplete="username">
+<label for="lp">كلمة المرور</label><input id="lp" type="password" dir="ltr" autocomplete="current-password">
+<div class="er" id="le" style="margin-top:8px"></div>
+<button class="btn" type="submit" style="width:100%;margin-top:12px">دخول</button></form></section>
+<section id="admin" class="w" hidden>
+<h2 class="t" style="text-align:right">لوحة تحكم الطلبات</h2>
+<div class="dm" id="dm" hidden>وضع تجريبي: قاعدة البيانات غير متاحة في هذا العرض، فالطلبات تُحفظ مؤقتًا في هذه الصفحة فقط.</div>
+<div class="tabs"><button id="tb1" class="on">طلبات العملاء</button><button id="tb2">طلبات الفنيين</button></div>
+<div id="cnt" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+<div class="bar"><input id="q" placeholder="بحث بالاسم أو الهاتف أو رقم الطلب"><select id="fs"></select><select id="ft"></select></div>
+<div id="ls"></div>
+<button class="btn s p" id="ab">رجوع للموقع</button> <button class="btn s o" id="lo">تسجيل الخروج</button>
+</section>
+<footer><div class="fl"><svg><use href="#ic"/></svg><span>هاتلي <b>فني</b></span></div>© هاتلي فني — منيا القمح والقرى المجاورة</footer>
+
+<div class="ov" id="ov" hidden><div class="md">
+<button class="x" id="cl" aria-label="إغلاق">✕</button>
+<form id="f" novalidate>
+<h3>اطلب فني</h3><small style="color:var(--mut)">الحقول اللي عليها * مطلوبة</small>
+<label for="nm">الاسم *</label><input id="nm" autocomplete="name"><div class="er" data-e="nm"></div>
+<label for="ph">رقم الهاتف *</label><input id="ph" type="tel" inputmode="tel" placeholder="01xxxxxxxxx" dir="ltr" style="text-align:right" autocomplete="tel"><div class="er" data-e="ph"></div>
+<label for="ty">نوع الفني *</label><select id="ty"></select><div class="er" data-e="ty"></div>
+<label for="ds">وصف المشكلة</label><textarea id="ds" rows="4" placeholder="اشرح المشكلة بالتفصيل..."></textarea>
+<label>صورة أو فيديو للمشكلة</label>
+<input id="fl" type="file" accept="image/*,video/*" hidden>
+<div class="up" id="fb">📷 اضغط لإضافة صورة أو فيديو</div>
+<div class="pv" id="pv"></div><div class="er" data-e="fl"></div>
+<div class="r2"><div><label for="gv">المحافظة</label><select id="gv"></select></div><div><label for="mk">المركز</label><select id="mk"></select></div></div>
+<label for="vl">القرية <small>(اختياري)</small></label><input id="vl">
+<label for="ad">العنوان بالتفصيل *</label><input id="ad" placeholder="الشارع، رقم العقار، الدور..."><div class="er" data-e="ad"></div>
+<label for="lm">علامة مميزة للمكان</label><input id="lm" placeholder="جنب مسجد... / قدام صيدلية...">
+<label for="nt">ملاحظات إضافية</label><textarea id="nt" rows="2"></textarea>
+<div class="er" id="fe" style="margin-top:6px"></div>
+<button class="btn" id="sb" type="submit" style="width:100%;margin-top:14px">إرسال الطلب</button>
+</form>
+<div class="ok" id="okb" hidden>
+<div class="ck">✅</div><h3 style="margin:8px 0">تم استلام طلبك بنجاح ✅</h3>
+<p>فريق هاتلي فني هيراجع طلبك وهيتواصل معاك في أقرب وقت.</p>
+<p style="margin:0;color:var(--mut)">رقم طلبك</p><div class="no" id="on"></div>
+<button class="btn p" id="dn" style="margin-top:16px">تمام</button>
+</div></div></div>
+
+<div class="ov" id="ov2" hidden><div class="md">
+<button class="x" id="cl2" aria-label="إغلاق">✕</button>
+<form id="jf" novalidate>
+<h3>انضم كفني</h3><small style="color:var(--mut)">الحقول اللي عليها * مطلوبة</small>
+<label for="jn">الاسم *</label><input id="jn" autocomplete="name"><div class="er" data-j="jn"></div>
+<label for="jp">رقم الهاتف *</label><input id="jp" type="tel" inputmode="tel" placeholder="01xxxxxxxxx" dir="ltr" style="text-align:right"><div class="er" data-j="jp"></div>
+<label for="jt">التخصص *</label><select id="jt"></select><div class="er" data-j="jt"></div>
+<div class="r2"><div><label for="je">سنوات الخبرة</label><select id="je"></select></div><div><label for="jc">المركز</label><select id="jc"></select></div></div>
+<label for="jv">القرية / المنطقة اللي ساكن فيها</label><input id="jv">
+<label for="ja">نبذة عنك وأعمالك السابقة</label><textarea id="ja" rows="3" placeholder="اكتب خبرتك والأعمال اللي اشتغلتها..."></textarea>
+<div class="er" id="jfe" style="margin-top:6px"></div>
+<button class="btn" id="jb" type="submit" style="width:100%;margin-top:14px">إرسال طلب الانضمام</button>
+</form>
+<div class="ok" id="jok" hidden><div class="ck">✅</div><h3 style="margin:8px 0">تم استلام طلب انضمامك ✅</h3>
+<p>فريق هاتلي فني هيراجع بياناتك وهيتواصل معاك في أقرب وقت.</p>
+<p style="margin:0;color:var(--mut)">رقم طلبك</p><div class="no" id="jno"></div>
+<button class="btn p" id="jd" style="margin-top:16px">تمام</button></div>
+</div></div>
+<script>
+/* ===== إعدادات قابلة للتعديل ===== */
+const TYPES=[["⚡","كهربائي"],["🚿","سباك"],["🪚","نجار"],["❄️","فني تكييف"],["🧺","فني أجهزة منزلية"],["📡","فني دش"],["🌐","فني شبكات وإنترنت"],["🛠️","أخرى"]];
+const GOVS=["الشرقية","الدقهلية","القليوبية","أخرى"];
+const CENTERS=["منيا القمح","أبو كبير","الإبراهيمية","ههيا","ديرب نجم","كفر صقر","الزقازيق","أخرى"];
+const STATUS=["جديد","جاري البحث عن فني","تم توفير فني","تم الانتهاء"];
+const $=id=>document.getElementById(id);
+const opts=(a,ph)=>(ph?`<option value="">${ph}</option>`:"")+a.map(x=>`<option>${x}</option>`).join("");
+/* ===== ضع بيانات مشروع Firebase هنا (من Project settings > Your apps) ===== */
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDDluuvhiH8X-IjtZnqkUqsGjtIRjBvy-I",
+  authDomain: "hatli-fany.firebaseapp.com",
+  projectId: "hatli-fany",
+  storageBucket: "hatli-fany.firebasestorage.app",
+  messagingSenderId: "631303841254",
+  appId: "1:631303841254:web:c6c230775837ca79d46227",
+  measurementId: "G-5VH0NDW3C4"
+};
+const USE_STORAGE=false; /* اجعلها true فقط بعد تفعيل Storage (يتطلب خطة Blaze) لرفع الفيديو */
+const fb=(window.firebase&&!FIREBASE_CONFIG.apiKey.startsWith("PASTE"))?firebase.initializeApp(FIREBASE_CONFIG):null;
+const auth=fb?firebase.auth():null,fs=fb?firebase.firestore():null,stg=(fb&&USE_STORAGE)?firebase.storage():null;
+let mem=[],file=null,rows=[];
+
+$("svc").innerHTML=TYPES.map(t=>`<div class="c rv"><div class="i">${t[0]}</div>${t[1]}</div>`).join("");
+$("ty").innerHTML=opts(TYPES.map(t=>t[1]),"اختر نوع الفني");
+$("gv").innerHTML=opts(GOVS);$("mk").innerHTML=opts(CENTERS);
+$("fs").innerHTML=opts(STATUS,"كل الحالات");$("ft").innerHTML=opts(TYPES.map(t=>t[1]),"كل أنواع الفنيين");
+
+/* ظهور تدريجي */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}}),{threshold:.12});
+document.querySelectorAll(".rv").forEach(e=>io.observe(e));
+
+const view=n=>{["home","admin","login"].forEach(k=>$(k).hidden=k!==n);scrollTo(0,0)};
+$("lg").onclick=$("ab").onclick=()=>view("home");
+
+const openM=()=>{$("f").hidden=false;$("okb").hidden=true;$("ov").hidden=false;document.body.style.overflow="hidden"};
+const closeM=()=>{$("ov").hidden=true;document.body.style.overflow=""};
+document.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>{view("home");openM()});
+$("cl").onclick=$("dn").onclick=closeM;
+$("ov").onclick=e=>{if(e.target===$("ov"))closeM()};
+$("fb").onclick=()=>$("fl").click();
+
+const ar2en=s=>s.replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d)).replace(/[\s\-]/g,"");
+function normPhone(v){let p=ar2en(v);if(p.startsWith("+20"))p="0"+p.slice(3);else if(p.startsWith("0020"))p="0"+p.slice(4);return p}
+const validPhone=p=>/^01[0125]\d{8}$/.test(p)||/^0[2-9]\d{7,8}$/.test(p);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fe=$("pv").nextElementSibling;
+
+$("fl").onchange=e=>{
+  const f=e.target.files[0];$("pv").innerHTML="";fe.textContent="";file=null;
+  if(!f)return;
+  if(!/^(image|video)\//.test(f.type)){fe.textContent="الملف لازم يكون صورة أو فيديو";return}
+  if(f.size>20*1048576){fe.textContent="حجم الملف أكبر من 20 ميجا";return}
+  if(f.type.startsWith("video")&&!stg){fe.textContent="رفع الفيديو غير مفعّل حاليًا، ارفع صورة بدلًا منه";return}file=f;const u=URL.createObjectURL(f);
+  $("pv").innerHTML=f.type.startsWith("video")?`<video src="${u}" controls></video>`:`<img src="${u}" alt="معاينة">`;
+  $("fb").textContent="✔️ تم اختيار الملف — اضغط للتغيير";
+};
+function small(f){return new Promise(r=>{const i=new Image();i.onload=()=>{const k=Math.min(1,900/Math.max(i.width,i.height)),c=document.createElement("canvas");c.width=i.width*k;c.height=i.height*k;c.getContext("2d").drawImage(i,0,0,c.width,c.height);r(c.toDataURL("image/jpeg",.7))};i.onerror=()=>r(null);i.src=URL.createObjectURL(f)})}
+async function saveMedia(){
+  if(!file)return null;
+  if(stg){const ext=(file.name.split(".").pop()||"bin").toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,5)||"bin";
+    const ref=stg.ref("media/"+crypto.randomUUID()+"."+ext);await ref.put(file,{contentType:file.type});
+    return{url:await ref.getDownloadURL(),kind:file.type.split("/")[0]}}
+  if(file.type.startsWith("video"))throw new Error("video");
+  const d=await small(file);if(!d)throw new Error("img");return{url:d,kind:"image"};
+}
+const newNo=()=>{const d=new Date();return"HF-"+String(d.getFullYear()).slice(2)+String(d.getMonth()+1).padStart(2,"0")+String(d.getDate()).padStart(2,"0")+"-"+Math.floor(1000+Math.random()*9000)};
+
+$("f").onsubmit=async e=>{
+  e.preventDefault();
+  const v={nm:$("nm").value.trim(),ph:normPhone($("ph").value),ty:$("ty").value,ad:$("ad").value.trim()};
+  const er={};
+  if(v.nm.length<2)er.nm="من فضلك اكتب اسمك";
+  if(!v.ph)er.ph="رقم الهاتف مطلوب";else if(!validPhone(v.ph))er.ph="رقم الهاتف غير صحيح (مثال: 01012345678)";
+  if(!v.ty)er.ty="اختر نوع الفني";
+  if(v.ad.length<5)er.ad="اكتب العنوان بالتفصيل";
+  document.querySelectorAll("[data-e]").forEach(d=>{if(d.dataset.e!=="fl")d.textContent=er[d.dataset.e]||""});
+  ["nm","ph","ty","ad"].forEach(k=>$(k).classList.toggle("bad",!!er[k]));
+  if(Object.keys(er).length){$("fe").textContent="من فضلك راجع الحقول المطلوبة";document.querySelector(".bad").focus();return}
+  $("fe").textContent="";$("sb").disabled=true;$("sb").textContent="جاري الإرسال...";
+  let m=null;try{m=await saveMedia()}catch(x){$("fe").textContent="تعذر رفع الملف، حاول مرة أخرى أو أرسل الطلب بدونه";$("sb").disabled=false;$("sb").textContent="إرسال الطلب";return}const id=newNo();
+  const o={id,name:v.nm,phone:v.ph,type:v.ty,desc:$("ds").value.trim(),gov:$("gv").value,center:$("mk").value,village:$("vl").value.trim(),address:v.ad,landmark:$("lm").value.trim(),notes:$("nt").value.trim(),media:m,status:STATUS[0],createdAt:Date.now()};
+  try{await insertRow("requests",o)}
+  catch(x){$("fe").textContent="تعذر إرسال الطلب، حاول مرة أخرى";$("sb").disabled=false;$("sb").textContent="إرسال الطلب";return}
+  $("on").textContent=id;$("f").reset();$("pv").innerHTML="";$("fb").textContent="📷 اضغط لإضافة صورة أو فيديو";file=null;
+  $("sb").disabled=false;$("sb").textContent="إرسال الطلب";$("f").hidden=true;$("okb").hidden=false;
+};
+
+/* ===== لوحة التحكم ===== */
+function renderReq(){
+  const q=ar2en($("q").value.trim()).toLowerCase(),s=$("fs").value,t=$("ft").value;
+  $("cnt").innerHTML=STATUS.map((x,i)=>`<span class="tg s${i}">${x}: ${rows.filter(o=>o.status===x).length}</span>`).join("");
+  const l=rows.filter(o=>(!s||o.status===s)&&(!t||o.type===t)&&(!q||[o.name,o.phone,o.id,o.desc].join(" ").toLowerCase().includes(q)));
+  $("ls").innerHTML=l.length?l.map(o=>{
+    const wa="https://wa.me/2"+o.phone.replace(/^0/,"");
+    const md=o.media?(o.media.kind==="video"?`<video src="${esc(o.media.url)}" controls></video>`:`<img src="${esc(o.media.url)}" alt="">`):"";
+    return`<div class="o"><div class="h"><b>${esc(o.name)} — <span dir="ltr">${esc(o.phone)}</span></b><span class="tg">${esc(o.id)}</span></div>
+<div style="margin-top:6px"><span class="tg">${esc(o.type)}</span> <span class="tg s${Math.max(0,STATUS.indexOf(o.status))}">${esc(o.status)}</span> <small style="color:var(--mut)">${new Date(o.createdAt).toLocaleString("ar-EG")}</small></div>
+${o.desc?`<p style="margin:8px 0">${esc(o.desc)}</p>`:""}
+<small>📍 ${esc(o.gov)} — ${esc(o.center)}${o.village?" — "+esc(o.village):""} — ${esc(o.address)}${o.landmark?" (قرب "+esc(o.landmark)+")":""}</small>
+${o.notes?`<div><small>ملاحظات: ${esc(o.notes)}</small></div>`:""}${md}
+<div class="a"><select data-id="${esc(o.id)}">${STATUS.map(x=>`<option${x===o.status?" selected":""}>${x}</option>`).join("")}</select>
+<a class="btn p s" href="tel:${esc(o.phone)}">📞 اتصال</a><a class="btn s" href="${esc(wa)}" target="_blank" rel="noopener">واتساب</a></div></div>`}).join(""):'<div class="c">لا توجد طلبات</div>';
+  document.querySelectorAll(".o select").forEach(el=>el.onchange=async()=>{
+    const id=el.dataset.id;
+    try{await setStatus("requests",id,el.value)}catch(e){alert("تعذر تحديث الحالة")}
+  });
+}
+const TSTATUS=["جديد","تم التواصل","مقبول","مرفوض"],TCLS=["s0","s1","s3",""],EXP=["أقل من سنة","من 1 إلى 3 سنوات","من 3 إلى 5 سنوات","أكثر من 5 سنوات"];
+let tab="r",trows=[],tmem=[];
+const render=()=>tab==="r"?renderReq():renderTech();
+function setTab(t){tab=t;$("tb1").classList.toggle("on",t==="r");$("tb2").classList.toggle("on",t==="t");$("fs").innerHTML=opts(t==="r"?STATUS:TSTATUS,"كل الحالات");render()}
+$("tb1").onclick=()=>setTab("r");$("tb2").onclick=()=>setTab("t");
+["q","fs","ft"].forEach(k=>$(k).oninput=render);
+function renderTech(){
+  const q=ar2en($("q").value.trim()).toLowerCase(),s=$("fs").value,t=$("ft").value;
+  $("cnt").innerHTML=TSTATUS.map((x,i)=>`<span class="tg ${TCLS[i]}">${x}: ${trows.filter(o=>o.status===x).length}</span>`).join("");
+  const l=trows.filter(o=>(!s||o.status===s)&&(!t||o.specialty===t)&&(!q||[o.name,o.phone,o.id,o.about].join(" ").toLowerCase().includes(q)));
+  $("ls").innerHTML=l.length?l.map(o=>{
+    const wa="https://wa.me/2"+o.phone.replace(/^0/,"");
+    return`<div class="o"><div class="h"><b>${esc(o.name)} — <span dir="ltr">${esc(o.phone)}</span></b><span class="tg">${esc(o.id)}</span></div>
+<div style="margin-top:6px"><span class="tg">${esc(o.specialty)}</span> <span class="tg ${TCLS[Math.max(0,TSTATUS.indexOf(o.status))]}">${esc(o.status)}</span> <small style="color:var(--mut)">خبرة: ${esc(o.exp)} — ${new Date(o.createdAt).toLocaleString("ar-EG")}</small></div>
+${o.about?`<p style="margin:8px 0">${esc(o.about)}</p>`:""}
+<small>📍 ${esc(o.center)}${o.village?" — "+esc(o.village):""}</small>
+<div class="a"><select data-id="${esc(o.id)}">${TSTATUS.map(x=>`<option${x===o.status?" selected":""}>${x}</option>`).join("")}</select>
+<a class="btn p s" href="tel:${esc(o.phone)}">📞 اتصال</a><a class="btn s" href="${esc(wa)}" target="_blank" rel="noopener">واتساب</a></div></div>`}).join(""):'<div class="c">لا توجد طلبات فنيين</div>';
+  document.querySelectorAll(".o select").forEach(el=>el.onchange=async()=>{
+    const id=el.dataset.id;
+    try{await setStatus("technicians",id,el.value)}catch(e){alert("تعذر تحديث الحالة")}
+  });
+}
+/* ===== تقديم الفنيين ===== */
+$("jt").innerHTML=opts(TYPES.map(t=>t[1]).filter(x=>x!=="أخرى").concat("أخرى"),"اختر تخصصك");$("je").innerHTML=opts(EXP);$("jc").innerHTML=opts(CENTERS);
+const openJ=()=>{$("jf").hidden=false;$("jok").hidden=true;$("ov2").hidden=false;document.body.style.overflow="hidden"};
+const closeJ=()=>{$("ov2").hidden=true;document.body.style.overflow=""};
+document.querySelectorAll("[data-join]").forEach(b=>b.onclick=()=>{view("home");openJ()});
+$("cl2").onclick=$("jd").onclick=closeJ;$("ov2").onclick=e=>{if(e.target===$("ov2"))closeJ()};
+$("jf").onsubmit=async e=>{
+  e.preventDefault();
+  const v={jn:$("jn").value.trim(),jp:normPhone($("jp").value),jt:$("jt").value},er={};
+  if(v.jn.length<2)er.jn="من فضلك اكتب اسمك";
+  if(!v.jp)er.jp="رقم الهاتف مطلوب";else if(!validPhone(v.jp))er.jp="رقم الهاتف غير صحيح (مثال: 01012345678)";
+  if(!v.jt)er.jt="اختر تخصصك";
+  document.querySelectorAll("[data-j]").forEach(d=>d.textContent=er[d.dataset.j]||"");
+  ["jn","jp","jt"].forEach(k=>$(k).classList.toggle("bad",!!er[k]));
+  if(Object.keys(er).length){$("jfe").textContent="من فضلك راجع الحقول المطلوبة";document.querySelector("#jf .bad").focus();return}
+  $("jfe").textContent="";$("jb").disabled=true;$("jb").textContent="جاري الإرسال...";
+  const id=newNo().replace("HF-","TC-");
+  const o={id,name:v.jn,phone:v.jp,specialty:v.jt,exp:$("je").value,center:$("jc").value,village:$("jv").value.trim(),about:$("ja").value.trim(),status:TSTATUS[0],createdAt:Date.now()};
+  try{await insertRow("technicians",o)}
+  catch(x){$("jfe").textContent="تعذر إرسال الطلب، حاول مرة أخرى";$("jb").disabled=false;$("jb").textContent="إرسال طلب الانضمام";return}
+  $("jno").textContent=id;$("jf").reset();$("jb").disabled=false;$("jb").textContent="إرسال طلب الانضمام";$("jf").hidden=true;$("jok").hidden=false;
+};
+
+/* ===== الاتصال بـ Firebase ===== */
+async function insertRow(t,o){
+  if(!fs){(t==="requests"?mem:tmem).unshift(o);return}
+  const p={...o,createdAt:firebase.firestore.FieldValue.serverTimestamp()};
+  await fs.collection(t).doc(o.id).set(p);
+}
+async function setStatus(t,id,v){await fs.collection(t).doc(id).update({status:v})}
+function ping(t){try{const c=new(window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator();o.connect(c.destination);o.frequency.value=880;o.start();o.stop(c.currentTime+.25)}catch(e){}try{if(Notification.permission==="granted")new Notification("هاتلي فني",{body:t})}catch(e){}}
+let unsubs=[],authReady=false,cur=null;
+function listen(){
+  if(unsubs.length)return;
+  const mk=(t,set,label)=>{let init=true;return fs.collection(t).orderBy("createdAt","desc").onSnapshot(sn=>{
+    set(sn.docs.map(d=>{const x=d.data();return{...x,createdAt:x.createdAt&&x.createdAt.toMillis?x.createdAt.toMillis():Date.now()}}));
+    if(!init&&sn.docChanges().some(c=>c.type==="added"&&!c.doc.metadata.hasPendingWrites))ping(label);
+    init=false;render();
+  },e=>console.error(e))};
+  unsubs=[mk("requests",v=>{rows=v},"وصل طلب عميل جديد"),mk("technicians",v=>{trows=v},"وصل طلب انضمام فني جديد")];
+}
+function enterAdmin(){
+  if(!fb){view("login");$("le").textContent="لم يتم ربط Firebase بعد";return}
+  if(!authReady)return;
+  if(!cur){view("login");return}
+  view("admin");listen();
+}
+if(auth)auth.onAuthStateChanged(u=>{cur=u;authReady=true;route()});
+$("lf").onsubmit=async e=>{
+  e.preventDefault();$("le").textContent="";if(!auth)return enterAdmin();
+  try{await auth.signInWithEmailAndPassword($("le1").value.trim(),$("lp").value);try{Notification.requestPermission()}catch(x){}$("lp").value=""}
+  catch(x){$("le").textContent="بيانات الدخول غير صحيحة"}
+};
+$("lo").onclick=async()=>{unsubs.forEach(u=>u());unsubs=[];rows=[];trows=[];if(auth)await auth.signOut();view("login")};
+$("ab").addEventListener("click",()=>history.replaceState(null,"",location.pathname));
+function route(){location.hash==="#admin"?enterAdmin():view("home")}
+addEventListener("hashchange",route);route();
+</script>
+</body>
+</html>
