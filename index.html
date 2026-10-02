@@ -5,10 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>هاتلي فني</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230E7C66'/%3E%3Cpath d='M32 8C22 8 15 15.5 15 24.5 15 36 32 54 32 54S49 36 49 24.5C49 15.5 42 8 32 8Z' fill='%23F59E0B'/%3E%3Ccircle cx='32' cy='24' r='6.6' fill='%23fff'/%3E%3C/svg%3E">
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
 :root{--l1:#0E7C66;--l2:#F59E0B;--pri:#0B2A5B;--pri2:#123d82;--acc:#F97316;--acc2:#ea580c;--bg:#F4F6FA;--card:#fff;--tx:#12203a;--mut:#64708a;--bd:#e0e5ee;--err:#c0392b;--ok:#15803d;
@@ -185,20 +182,9 @@ const CENTERS=["منيا القمح","أبو كبير","الإبراهيمية",
 const STATUS=["جديد","جاري البحث عن فني","تم توفير فني","تم الانتهاء"];
 const $=id=>document.getElementById(id);
 const opts=(a,ph)=>(ph?`<option value="">${ph}</option>`:"")+a.map(x=>`<option>${x}</option>`).join("");
-/* ===== ضع بيانات مشروع Firebase هنا (من Project settings > Your apps) ===== */
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyDDluuvhiH8X-IjtZnqkUqsGjtIRjBvy-I",
-  authDomain: "hatli-fany.firebaseapp.com",
-  projectId: "hatli-fany",
-  storageBucket: "hatli-fany.firebasestorage.app",
-  messagingSenderId: "631303841254",
-  appId: "1:631303841254:web:c6c230775837ca79d46227",
-  measurementId: "G-5VH0NDW3C4"
-};
-const USE_STORAGE=false; /* اجعلها true فقط بعد تفعيل Storage (يتطلب خطة Blaze) لرفع الفيديو */
-const fb=(window.firebase&&!FIREBASE_CONFIG.apiKey.startsWith("PASTE"))?firebase.initializeApp(FIREBASE_CONFIG):null;
-const auth=fb?firebase.auth():null,fs=fb?firebase.firestore():null,stg=(fb&&USE_STORAGE)?firebase.storage():null;
+/* ===== ضع بيانات مشروع Supabase هنا ===== */
+const SUPABASE_URL="PASTE_SUPABASE_URL",SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxyZHV5bGhhbHh1bG5zZXNkcWl3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3NzUxMjEsImV4cCI6MjEwNjM1MTEyMX0.JrNELRArpHKIRjOHml-wjMiRYPvW7DEQjxyNKhBUvMA";
+const sb=(window.supabase&&!SUPABASE_URL.startsWith("PASTE"))?supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
 let mem=[],file=null,rows=[];
 
 $("svc").innerHTML=TYPES.map(t=>`<div class="c rv"><div class="i">${t[0]}</div>${t[1]}</div>`).join("");
@@ -231,18 +217,19 @@ $("fl").onchange=e=>{
   if(!f)return;
   if(!/^(image|video)\//.test(f.type)){fe.textContent="الملف لازم يكون صورة أو فيديو";return}
   if(f.size>20*1048576){fe.textContent="حجم الملف أكبر من 20 ميجا";return}
-  if(f.type.startsWith("video")&&!stg){fe.textContent="رفع الفيديو غير مفعّل حاليًا، ارفع صورة بدلًا منه";return}file=f;const u=URL.createObjectURL(f);
+  file=f;const u=URL.createObjectURL(f);
   $("pv").innerHTML=f.type.startsWith("video")?`<video src="${u}" controls></video>`:`<img src="${u}" alt="معاينة">`;
   $("fb").textContent="✔️ تم اختيار الملف — اضغط للتغيير";
 };
 function small(f){return new Promise(r=>{const i=new Image();i.onload=()=>{const k=Math.min(1,900/Math.max(i.width,i.height)),c=document.createElement("canvas");c.width=i.width*k;c.height=i.height*k;c.getContext("2d").drawImage(i,0,0,c.width,c.height);r(c.toDataURL("image/jpeg",.7))};i.onerror=()=>r(null);i.src=URL.createObjectURL(f)})}
 async function saveMedia(){
   if(!file)return null;
-  if(stg){const ext=(file.name.split(".").pop()||"bin").toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,5)||"bin";
-    const ref=stg.ref("media/"+crypto.randomUUID()+"."+ext);await ref.put(file,{contentType:file.type});
-    return{url:await ref.getDownloadURL(),kind:file.type.split("/")[0]}}
-  if(file.type.startsWith("video"))throw new Error("video");
-  const d=await small(file);if(!d)throw new Error("img");return{url:d,kind:"image"};
+  if(!sb)return null;
+  const ext=(file.name.split(".").pop()||"bin").toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,5)||"bin";
+  const path=new Date().getFullYear()+"/"+crypto.randomUUID()+"."+ext;
+  const r=await sb.storage.from("media").upload(path,file,{contentType:file.type});
+  if(r.error)throw r.error;
+  return{url:sb.storage.from("media").getPublicUrl(path).data.publicUrl,kind:file.type.split("/")[0]};
 }
 const newNo=()=>{const d=new Date();return"HF-"+String(d.getFullYear()).slice(2)+String(d.getMonth()+1).padStart(2,"0")+String(d.getDate()).padStart(2,"0")+"-"+Math.floor(1000+Math.random()*9000)};
 
@@ -332,39 +319,43 @@ $("jf").onsubmit=async e=>{
   $("jno").textContent=id;$("jf").reset();$("jb").disabled=false;$("jb").textContent="إرسال طلب الانضمام";$("jf").hidden=true;$("jok").hidden=false;
 };
 
-/* ===== الاتصال بـ Firebase ===== */
+/* ===== الاتصال بـ Supabase ===== */
 async function insertRow(t,o){
-  if(!fs){(t==="requests"?mem:tmem).unshift(o);return}
-  const p={...o,createdAt:firebase.firestore.FieldValue.serverTimestamp()};
-  await fs.collection(t).doc(o.id).set(p);
+  if(!sb){(t==="requests"?mem:tmem).unshift(o);return}
+  const p=t==="requests"
+   ?{id:o.id,name:o.name,phone:o.phone,type:o.type,description:o.desc,gov:o.gov,center:o.center,village:o.village,address:o.address,landmark:o.landmark,notes:o.notes,media_url:o.media?o.media.url:null,media_kind:o.media?o.media.kind:null}
+   :{id:o.id,name:o.name,phone:o.phone,specialty:o.specialty,exp:o.exp,center:o.center,village:o.village,about:o.about};
+  const r=await sb.from(t).insert(p);if(r.error)throw r.error;
 }
-async function setStatus(t,id,v){await fs.collection(t).doc(id).update({status:v})}
+async function setStatus(t,id,v){const r=await sb.from(t).update({status:v}).eq("id",id);if(r.error)throw r.error;await loadAll()}
+const mapReq=r=>({id:r.id,name:r.name,phone:r.phone,type:r.type,desc:r.description,gov:r.gov,center:r.center,village:r.village,address:r.address,landmark:r.landmark,notes:r.notes,media:r.media_url?{url:r.media_url,kind:r.media_kind}:null,status:r.status,createdAt:Date.parse(r.created_at)});
+async function loadAll(){
+  const [a,b]=await Promise.all([sb.from("requests").select("*").order("created_at",{ascending:false}),sb.from("technicians").select("*").order("created_at",{ascending:false})]);
+  rows=(a.data||[]).map(mapReq);trows=(b.data||[]).map(r=>({...r,createdAt:Date.parse(r.created_at)}));render();
+}
 function ping(t){try{const c=new(window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator();o.connect(c.destination);o.frequency.value=880;o.start();o.stop(c.currentTime+.25)}catch(e){}try{if(Notification.permission==="granted")new Notification("هاتلي فني",{body:t})}catch(e){}}
-let unsubs=[],authReady=false,cur=null;
-function listen(){
-  if(unsubs.length)return;
-  const mk=(t,set,label)=>{let init=true;return fs.collection(t).orderBy("createdAt","desc").onSnapshot(sn=>{
-    set(sn.docs.map(d=>{const x=d.data();return{...x,createdAt:x.createdAt&&x.createdAt.toMillis?x.createdAt.toMillis():Date.now()}}));
-    if(!init&&sn.docChanges().some(c=>c.type==="added"&&!c.doc.metadata.hasPendingWrites))ping(label);
-    init=false;render();
-  },e=>console.error(e))};
-  unsubs=[mk("requests",v=>{rows=v},"وصل طلب عميل جديد"),mk("technicians",v=>{trows=v},"وصل طلب انضمام فني جديد")];
+let chan=null;
+async function enterAdmin(){
+  if(!sb){view("login");$("le").textContent="لم يتم ربط قاعدة البيانات بعد";return}
+  const{data}=await sb.auth.getSession();
+  if(!data.session){view("login");return}
+  view("admin");await loadAll();
+  if(!chan)chan=sb.channel("hf")
+    .on("postgres_changes",{event:"*",schema:"public",table:"requests"},p=>{loadAll();if(p.eventType==="INSERT")ping("وصل طلب عميل جديد")})
+    .on("postgres_changes",{event:"*",schema:"public",table:"technicians"},p=>{loadAll();if(p.eventType==="INSERT")ping("وصل طلب انضمام فني جديد")})
+    .subscribe();
 }
-function enterAdmin(){
-  if(!fb){view("login");$("le").textContent="لم يتم ربط Firebase بعد";return}
-  if(!authReady)return;
-  if(!cur){view("login");return}
-  view("admin");listen();
-}
-if(auth)auth.onAuthStateChanged(u=>{cur=u;authReady=true;route()});
 $("lf").onsubmit=async e=>{
-  e.preventDefault();$("le").textContent="";if(!auth)return enterAdmin();
-  try{await auth.signInWithEmailAndPassword($("le1").value.trim(),$("lp").value);try{Notification.requestPermission()}catch(x){}$("lp").value=""}
-  catch(x){$("le").textContent="بيانات الدخول غير صحيحة"}
+  e.preventDefault();if(!sb)return enterAdmin();
+  $("le").textContent="";
+  const r=await sb.auth.signInWithPassword({email:$("le1").value.trim(),password:$("lp").value});
+  if(r.error){$("le").textContent="بيانات الدخول غير صحيحة";return}
+  try{Notification.requestPermission()}catch(x){}
+  $("lp").value="";enterAdmin();
 };
-$("lo").onclick=async()=>{unsubs.forEach(u=>u());unsubs=[];rows=[];trows=[];if(auth)await auth.signOut();view("login")};
+$("lo").onclick=async()=>{if(sb)await sb.auth.signOut();rows=[];trows=[];view("login")};
 $("ab").addEventListener("click",()=>history.replaceState(null,"",location.pathname));
-function route(){location.hash==="#admin"?enterAdmin():view("home")}
+const route=()=>location.hash==="#admin"?enterAdmin():view("home");
 addEventListener("hashchange",route);route();
 </script>
 </body>
