@@ -12,3 +12,4 @@ const TEAM_WHATSAPP="201146206882";
 const PAY_METHOD="فودافون كاش";
 const PAY_NUMBER="01012501290";
 const FEE=50;
+const FACEBOOK_URL="https://www.facebook.com/share/1K3rVCmeRg/";
