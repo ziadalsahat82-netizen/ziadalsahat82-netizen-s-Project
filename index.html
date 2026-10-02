@@ -9,6 +9,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+<script src="config.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
 :root{--l1:#0E7C66;--l2:#F59E0B;--pri:#0B2A5B;--pri2:#123d82;--acc:#F97316;--acc2:#ea580c;--bg:#F4F6FA;--card:#fff;--tx:#12203a;--mut:#64708a;--bd:#e0e5ee;--err:#c0392b;--ok:#15803d;
@@ -72,7 +73,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc);box
 
 /* admin */
 .tg{display:inline-block;padding:2px 11px;border-radius:99px;background:#eef3fc;color:var(--pri);font-size:13px;font-weight:600}
-.tg.s0{background:#fff1e6;color:var(--acc2)}.tg.s1{background:#fef3c7;color:#92400e}.tg.s2{background:#dbeafe;color:#1e40af}.tg.s3{background:#dcfce7;color:var(--ok)}
+.tg.s0{background:#fff1e6;color:var(--acc2)}.tg.s1{background:#fef3c7;color:#92400e}.tg.s2{background:#dbeafe;color:#1e40af}.tg.s3{background:#ffedd5;color:#9a3412}.tg.s4{background:#dbeafe;color:#1e40af}.tg.s5{background:#dcfce7;color:var(--ok)}
 .bar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.bar>*{flex:1 1 160px}
 .o{background:#fff;border:1px solid var(--bd);border-radius:16px;padding:16px;margin-bottom:12px;animation:up .3s}
 .o .h{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center}
@@ -84,6 +85,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc);box
 .fl{display:flex;align-items:center;justify-content:center;gap:8px;font-weight:800;font-size:20px;color:var(--l1);margin-bottom:6px}.fl svg{width:30px;height:30px}.fl b{color:var(--l2)}
 .jn{margin:56px 0 0;background:#fff;border:1px solid var(--bd);border-radius:24px;padding:28px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}.jn h3{margin:0 0 4px;color:var(--pri);font-size:24px}.jn p{margin:0;color:var(--mut)}
 .tabs{display:flex;gap:8px;margin:10px 0}.tabs button{flex:1;padding:10px;border:1.5px solid var(--bd);background:#fff;border-radius:12px;font:700 15px Cairo,sans-serif;cursor:pointer}.tabs button.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+#stars button{font-size:36px;background:none;border:0;cursor:pointer;color:#cbd5e1}#stars button.on{color:var(--l2)}
 </style>
 </head>
 <body>
@@ -105,7 +107,8 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc);box
 <div class="w">
 <h2 class="t rv">خدماتنا</h2><p class="sub rv">كل الفنيين اللي محتاجهم في مكان واحد</p>
 <div class="g" id="svc"></div>
-<h2 class="t rv">كيف تعمل الخدمة؟</h2><p class="sub rv">تلات خطوات وبس</p>
+<div id="ptw" hidden><h2 class="t rv in">فنيينا</h2><p class="sub">فنيين معتمدين من فريق هاتلي فني</p><div class="g" id="pt"></div></div>
+<h2 class="t rv">كيف تعمل الخدمة؟</h2><p class="sub rv">تلات خطوات وبس</p><p class="sub rv" id="feeNote" style="font-weight:700;color:var(--l1)"></p>
 <div class="g st">
 <div class="c big rv"><div class="n">1</div><div class="i" style="margin:8px auto">📝</div><h3>ابعت المشكلة</h3><p>اكتب المشكلة وارفع صورة أو فيديو يوضحها</p></div>
 <div class="c big rv"><div class="n">2</div><div class="i" style="margin:8px auto">🔎</div><h3>إحنا نبحث عن الفني المناسب</h3><p>فريقنا يراجع طلبك ويختار الأنسب لمشكلتك</p></div>
@@ -115,6 +118,14 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc);box
 <div class="cta rv"><h3>جاهز نحل مشكلتك؟</h3><button class="btn" data-open>اطلب فني الآن</button></div>
 </div></main>
 
+<section id="rate" class="w" hidden><div class="md" style="max-width:460px;margin:50px auto;box-shadow:0 14px 40px #0b2a5b1f">
+<form id="rf" novalidate><h3>قيّم الفني</h3><small style="color:var(--mut)">رأيك بيساعدنا نختار الأفضل</small>
+<label for="rid">رقم الطلب</label><input id="rid" dir="ltr" style="text-align:right">
+<div id="stars" style="text-align:center;margin:10px 0"><button type="button" data-v="1">★</button><button type="button" data-v="2">★</button><button type="button" data-v="3">★</button><button type="button" data-v="4">★</button><button type="button" data-v="5">★</button></div>
+<label for="rc">تعليق (اختياري)</label><textarea id="rc" rows="3"></textarea>
+<div class="er" id="rm" style="margin-top:6px"></div>
+<button class="btn" type="submit" style="width:100%;margin-top:12px">إرسال التقييم</button></form>
+<div class="ok" id="rd" hidden><div class="ck">✅</div><h3>شكرًا لتقييمك!</h3><p>هيتراجع من فريق هاتلي فني قبل ما يظهر.</p></div></div></section>
 <section id="login" class="w" hidden><form id="lf" class="md" style="max-width:420px;margin:60px auto;box-shadow:0 14px 40px #0b2a5b1f" novalidate>
 <h3>دخول فريق هاتلي فني</h3>
 <label for="le1">البريد الإلكتروني</label><input id="le1" type="email" dir="ltr" autocomplete="username">
@@ -124,13 +135,13 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc);box
 <section id="admin" class="w" hidden>
 <h2 class="t" style="text-align:right">لوحة تحكم الطلبات</h2>
 <div class="dm" id="dm" hidden>وضع تجريبي: قاعدة البيانات غير متاحة في هذا العرض، فالطلبات تُحفظ مؤقتًا في هذه الصفحة فقط.</div>
-<div class="tabs"><button id="tb1" class="on">طلبات العملاء</button><button id="tb2">طلبات الفنيين</button></div>
+<div class="tabs"><button id="tb1" class="on">طلبات العملاء</button><button id="tb2">طلبات الفنيين</button><button id="tb3">التقييمات</button></div>
 <div id="cnt" style="display:flex;gap:8px;flex-wrap:wrap"></div>
 <div class="bar"><input id="q" placeholder="بحث بالاسم أو الهاتف أو رقم الطلب"><select id="fs"></select><select id="ft"></select></div>
 <div id="ls"></div>
 <button class="btn s p" id="ab">رجوع للموقع</button> <button class="btn s o" id="lo">تسجيل الخروج</button>
 </section>
-<footer><div class="fl"><svg><use href="#ic"/></svg><span>هاتلي <b>فني</b></span></div>© هاتلي فني — منيا القمح والقرى المجاورة</footer>
+<footer><a id="fw" class="btn s o" target="_blank" rel="noopener" hidden style="margin-bottom:12px">تواصل معنا على واتساب</a><div class="fl"><svg><use href="#ic"/></svg><span>هاتلي <b>فني</b></span></div>© هاتلي فني — منيا القمح والقرى المجاورة</footer>
 
 <div class="ov" id="ov" hidden><div class="md">
 <button class="x" id="cl" aria-label="إغلاق">✕</button>
@@ -166,7 +177,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc);box
 <label for="jn">الاسم *</label><input id="jn" autocomplete="name"><div class="er" data-j="jn"></div>
 <label for="jp">رقم الهاتف *</label><input id="jp" type="tel" inputmode="tel" placeholder="01xxxxxxxxx" dir="ltr" style="text-align:right"><div class="er" data-j="jp"></div>
 <label for="jt">التخصص *</label><select id="jt"></select><div class="er" data-j="jt"></div>
-<div class="r2"><div><label for="je">سنوات الخبرة</label><select id="je"></select></div><div><label for="jc">المركز</label><select id="jc"></select></div></div>
+<label for="je">سنوات الخبرة</label><select id="je"></select><div class="r2"><div><label for="jg">المحافظة</label><select id="jg"></select></div><div><label for="jc">المركز</label><select id="jc"></select></div></div>
 <label for="jv">القرية / المنطقة اللي ساكن فيها</label><input id="jv">
 <label for="ja">نبذة عنك وأعمالك السابقة</label><textarea id="ja" rows="3" placeholder="اكتب خبرتك والأعمال اللي اشتغلتها..."></textarea>
 <div class="er" id="jfe" style="margin-top:6px"></div>
@@ -180,22 +191,41 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc);box
 <script>
 /* ===== إعدادات قابلة للتعديل ===== */
 const TYPES=[["⚡","كهربائي"],["🚿","سباك"],["🪚","نجار"],["❄️","فني تكييف"],["🧺","فني أجهزة منزلية"],["📡","فني دش"],["🌐","فني شبكات وإنترنت"],["🛠️","أخرى"]];
-const GOVS=["الشرقية","الدقهلية","القليوبية","أخرى"];
-const CENTERS=["منيا القمح","أبو كبير","الإبراهيمية","ههيا","ديرب نجم","كفر صقر","الزقازيق","أخرى"];
-const STATUS=["جديد","جاري البحث عن فني","تم توفير فني","تم الانتهاء"];
+const GEO={"القاهرة":"مدينة نصر،مصر الجديدة،المعادي،حلوان،شبرا،عين شمس،المطرية،الزيتون،التجمع الخامس،الشروق،بدر،المقطم،السيدة زينب،وسط البلد،النزهة،البساتين،15 مايو،السلام",
+"الجيزة":"الجيزة،الدقي،العجوزة،إمبابة،بولاق الدكرور،الهرم،فيصل،6 أكتوبر،الشيخ زايد،العياط،الصف،أطفيح،أوسيم،كرداسة،البدرشين،منشأة القناطر،الواحات البحرية",
+"الإسكندرية":"المنتزه،الرمل،سيدي جابر،سموحة،العجمي،العامرية،برج العرب،الجمرك،محرم بك،العطارين،باب شرق",
+"القليوبية":"بنها،قليوب،شبرا الخيمة،القناطر الخيرية،الخانكة،كفر شكر،طوخ،شبين القناطر،الخصوص،العبور،قها",
+"الشرقية":"الزقازيق،منيا القمح،أبو كبير،ههيا،ديرب نجم،فاقوس،الإبراهيمية،بلبيس،العاشر من رمضان،أبو حماد،كفر صقر،مشتول السوق،الحسينية،أولاد صقر،القرين،القنايات،الصالحية الجديدة",
+"الدقهلية":"المنصورة،طلخا،ميت غمر،دكرنس،أجا،السنبلاوين،المنزلة،بلقاس،شربين،المطرية،بني عبيد،تمي الأمديد،الجمالية،منية النصر،نبروه،ميت سلسيل",
+"الغربية":"طنطا،المحلة الكبرى،كفر الزيات،زفتى،السنطة،بسيون،قطور،سمنود",
+"المنوفية":"شبين الكوم،مدينة السادات،منوف،أشمون،الباجور،قويسنا،بركة السبع،تلا،الشهداء،سرس الليان",
+"البحيرة":"دمنهور،كفر الدوار،رشيد،إيتاي البارود،أبو حمص،حوش عيسى،الدلنجات،كوم حمادة،شبراخيت،المحمودية،وادي النطرون،النوبارية الجديدة،أبو المطامير،إدكو،بدر",
+"كفر الشيخ":"كفر الشيخ،دسوق،فوه،مطوبس،بلطيم،الحامول،بيلا،الرياض،سيدي سالم،قلين،البرلس",
+"دمياط":"دمياط،دمياط الجديدة،فارسكور،كفر سعد،الزرقا،رأس البر،كفر البطيخ",
+"بورسعيد":"بورسعيد،بورفؤاد",
+"الإسماعيلية":"الإسماعيلية،فايد،القنطرة شرق،القنطرة غرب،التل الكبير،أبو صوير،القصاصين",
+"السويس":"السويس،الأربعين،عتاقة،فيصل،الجناين",
+"شمال سيناء":"العريش،الشيخ زويد،رفح،بئر العبد،الحسنة،نخل",
+"جنوب سيناء":"الطور،شرم الشيخ،دهب،نويبع،طابا،سانت كاترين،أبو رديس،أبو زنيمة،رأس سدر",
+"الفيوم":"الفيوم،سنورس،إطسا،طامية،إبشواي،يوسف الصديق",
+"بني سويف":"بني سويف،الواسطى،ناصر،إهناسيا،ببا،سمسطا،الفشن",
+"المنيا":"المنيا،المنيا الجديدة،ملوي،مغاغة،بني مزار،العدوة،سمالوط،أبو قرقاص،مطاي،دير مواس",
+"أسيوط":"أسيوط،ديروط،القوصية،أبنوب،منفلوط،أبو تيج،الغنايم،ساحل سليم،البداري،صدفا،الفتح",
+"سوهاج":"سوهاج،أخميم،جرجا،البلينا،المراغة،طما،طهطا،المنشاة،دار السلام،جهينة،ساقلتة،العسيرات",
+"قنا":"قنا،نجع حمادي،دشنا،قوص،فرشوط،أبوتشت،نقادة،الوقف،قفط",
+"الأقصر":"الأقصر،إسنا،أرمنت،الطود،البياضية،الزينية",
+"أسوان":"أسوان،كوم أمبو،إدفو،دراو،نصر النوبة،كلابشة،أبو سمبل",
+"البحر الأحمر":"الغردقة،سفاجا،القصير،مرسى علم،رأس غارب،الشلاتين،حلايب",
+"الوادي الجديد":"الخارجة،الداخلة،الفرافرة،باريس،بلاط",
+"مطروح":"مرسى مطروح،الحمام،العلمين،الضبعة،سيدي براني،السلوم،النجيلة،سيوة"};
+const GOVS=Object.keys(GEO).concat("أخرى");
+const centersOf=g=>(GEO[g]?GEO[g].split("،"):[]).concat("أخرى");
+function fillC(g,c){$(c).innerHTML=opts(centersOf($(g).value))}
+const STATUS=["جديد","جاري البحث عن فني","تم توفير فني","بانتظار الدفع","تم الدفع","تم الانتهاء"];
 const $=id=>document.getElementById(id);
 const opts=(a,ph)=>(ph?`<option value="">${ph}</option>`:"")+a.map(x=>`<option>${x}</option>`).join("");
 /* ===== ضع بيانات مشروع Firebase هنا (من Project settings > Your apps) ===== */
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyDDluuvhiH8X-IjtZnqkUqsGjtIRjBvy-I",
-  authDomain: "hatli-fany.firebaseapp.com",
-  projectId: "hatli-fany",
-  storageBucket: "hatli-fany.firebasestorage.app",
-  messagingSenderId: "631303841254",
-  appId: "1:631303841254:web:c6c230775837ca79d46227",
-  measurementId: "G-5VH0NDW3C4"
-};
+/* إعدادات Firebase والواتساب والرسوم في ملف config.js */
 const USE_STORAGE=false; /* اجعلها true فقط بعد تفعيل Storage (يتطلب خطة Blaze) لرفع الفيديو */
 const fb=(window.firebase&&!FIREBASE_CONFIG.apiKey.startsWith("PASTE"))?firebase.initializeApp(FIREBASE_CONFIG):null;
 const auth=fb?firebase.auth():null,fs=fb?firebase.firestore():null,stg=(fb&&USE_STORAGE)?firebase.storage():null;
@@ -203,14 +233,15 @@ let mem=[],file=null,rows=[];
 
 $("svc").innerHTML=TYPES.map(t=>`<div class="c rv"><div class="i">${t[0]}</div>${t[1]}</div>`).join("");
 $("ty").innerHTML=opts(TYPES.map(t=>t[1]),"اختر نوع الفني");
-$("gv").innerHTML=opts(GOVS);$("mk").innerHTML=opts(CENTERS);
+$("gv").innerHTML=opts(GOVS);$("gv").value="الشرقية";fillC("gv","mk");$("mk").value="منيا القمح";$("gv").onchange=()=>fillC("gv","mk");
+$("f").addEventListener("reset",()=>setTimeout(()=>{$("gv").value="الشرقية";fillC("gv","mk");$("mk").value="منيا القمح"}));
 $("fs").innerHTML=opts(STATUS,"كل الحالات");$("ft").innerHTML=opts(TYPES.map(t=>t[1]),"كل أنواع الفنيين");
 
 /* ظهور تدريجي */
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}}),{threshold:.12});
 document.querySelectorAll(".rv").forEach(e=>io.observe(e));
 
-const view=n=>{["home","admin","login"].forEach(k=>$(k).hidden=k!==n);scrollTo(0,0)};
+const view=n=>{["home","admin","login","rate"].forEach(k=>$(k).hidden=k!==n);scrollTo(0,0)};
 $("lg").onclick=$("ab").onclick=()=>view("home");
 
 const openM=()=>{$("f").hidden=false;$("okb").hidden=true;$("ov").hidden=false;document.body.style.overflow="hidden"};
@@ -279,18 +310,19 @@ function renderReq(){
 ${o.desc?`<p style="margin:8px 0">${esc(o.desc)}</p>`:""}
 <small>📍 ${esc(o.gov)} — ${esc(o.center)}${o.village?" — "+esc(o.village):""} — ${esc(o.address)}${o.landmark?" (قرب "+esc(o.landmark)+")":""}</small>
 ${o.notes?`<div><small>ملاحظات: ${esc(o.notes)}</small></div>`:""}${md}
-<div class="a"><select data-id="${esc(o.id)}">${STATUS.map(x=>`<option${x===o.status?" selected":""}>${x}</option>`).join("")}</select>
+<div class="a"><select data-id="${esc(o.id)}">${STATUS.map(x=>`<option${x===o.status?" selected":""}>${x}</option>`).join("")}</select>${extra(o)}
 <a class="btn p s" href="tel:${esc(o.phone)}">📞 اتصال</a><a class="btn s" href="${esc(wa)}" target="_blank" rel="noopener">واتساب</a></div></div>`}).join(""):'<div class="c">لا توجد طلبات</div>';
-  document.querySelectorAll(".o select").forEach(el=>el.onchange=async()=>{
+  document.querySelectorAll("select[data-asg]").forEach(el=>el.onchange=async()=>{const p=pubs.find(x=>x.id===el.value);try{await fs.collection("requests").doc(el.dataset.asg).update({tech:p?{id:p.id,name:p.name}:null})}catch(e){alert("تعذر تعيين الفني")}});
+  document.querySelectorAll(".o select[data-id]").forEach(el=>el.onchange=async()=>{
     const id=el.dataset.id;
     try{await setStatus("requests",id,el.value)}catch(e){alert("تعذر تحديث الحالة")}
   });
 }
-const TSTATUS=["جديد","تم التواصل","مقبول","مرفوض"],TCLS=["s0","s1","s3",""],EXP=["أقل من سنة","من 1 إلى 3 سنوات","من 3 إلى 5 سنوات","أكثر من 5 سنوات"];
-let tab="r",trows=[],tmem=[];
-const render=()=>tab==="r"?renderReq():renderTech();
-function setTab(t){tab=t;$("tb1").classList.toggle("on",t==="r");$("tb2").classList.toggle("on",t==="t");$("fs").innerHTML=opts(t==="r"?STATUS:TSTATUS,"كل الحالات");render()}
-$("tb1").onclick=()=>setTab("r");$("tb2").onclick=()=>setTab("t");
+const TSTATUS=["جديد","تم التواصل","مقبول","مرفوض"],TCLS=["s0","s1","s5",""],EXP=["أقل من سنة","من 1 إلى 3 سنوات","من 3 إلى 5 سنوات","أكثر من 5 سنوات"];
+let tab="r",trows=[],tmem=[],pubs=[],rrows=[];
+const render=()=>tab==="r"?renderReq():tab==="t"?renderTech():renderRate();
+function setTab(t){tab=t;["r","t","g"].forEach((k,i)=>$("tb"+(i+1)).classList.toggle("on",t===k));$("fs").innerHTML=opts(t==="r"?STATUS:t==="t"?TSTATUS:["بانتظار المراجعة","مقبول","مرفوض"],"كل الحالات");render()}
+$("tb1").onclick=()=>setTab("r");$("tb2").onclick=()=>setTab("t");$("tb3").onclick=()=>setTab("g");
 ["q","fs","ft"].forEach(k=>$(k).oninput=render);
 function renderTech(){
   const q=ar2en($("q").value.trim()).toLowerCase(),s=$("fs").value,t=$("ft").value;
@@ -301,7 +333,7 @@ function renderTech(){
     return`<div class="o"><div class="h"><b>${esc(o.name)} — <span dir="ltr">${esc(o.phone)}</span></b><span class="tg">${esc(o.id)}</span></div>
 <div style="margin-top:6px"><span class="tg">${esc(o.specialty)}</span> <span class="tg ${TCLS[Math.max(0,TSTATUS.indexOf(o.status))]}">${esc(o.status)}</span> <small style="color:var(--mut)">خبرة: ${esc(o.exp)} — ${new Date(o.createdAt).toLocaleString("ar-EG")}</small></div>
 ${o.about?`<p style="margin:8px 0">${esc(o.about)}</p>`:""}
-<small>📍 ${esc(o.center)}${o.village?" — "+esc(o.village):""}</small>
+<small>📍 ${esc(o.gov||"")} — ${esc(o.center)}${o.village?" — "+esc(o.village):""}</small>
 <div class="a"><select data-id="${esc(o.id)}">${TSTATUS.map(x=>`<option${x===o.status?" selected":""}>${x}</option>`).join("")}</select>
 <a class="btn p s" href="tel:${esc(o.phone)}">📞 اتصال</a><a class="btn s" href="${esc(wa)}" target="_blank" rel="noopener">واتساب</a></div></div>`}).join(""):'<div class="c">لا توجد طلبات فنيين</div>';
   document.querySelectorAll(".o select").forEach(el=>el.onchange=async()=>{
@@ -310,7 +342,8 @@ ${o.about?`<p style="margin:8px 0">${esc(o.about)}</p>`:""}
   });
 }
 /* ===== تقديم الفنيين ===== */
-$("jt").innerHTML=opts(TYPES.map(t=>t[1]).filter(x=>x!=="أخرى").concat("أخرى"),"اختر تخصصك");$("je").innerHTML=opts(EXP);$("jc").innerHTML=opts(CENTERS);
+$("jt").innerHTML=opts(TYPES.map(t=>t[1]).filter(x=>x!=="أخرى").concat("أخرى"),"اختر تخصصك");$("je").innerHTML=opts(EXP);$("jg").innerHTML=opts(GOVS);$("jg").value="الشرقية";fillC("jg","jc");$("jc").value="منيا القمح";$("jg").onchange=()=>fillC("jg","jc");
+$("jf").addEventListener("reset",()=>setTimeout(()=>{$("jg").value="الشرقية";fillC("jg","jc");$("jc").value="منيا القمح"}));
 const openJ=()=>{$("jf").hidden=false;$("jok").hidden=true;$("ov2").hidden=false;document.body.style.overflow="hidden"};
 const closeJ=()=>{$("ov2").hidden=true;document.body.style.overflow=""};
 document.querySelectorAll("[data-join]").forEach(b=>b.onclick=()=>{view("home");openJ()});
@@ -326,7 +359,7 @@ $("jf").onsubmit=async e=>{
   if(Object.keys(er).length){$("jfe").textContent="من فضلك راجع الحقول المطلوبة";document.querySelector("#jf .bad").focus();return}
   $("jfe").textContent="";$("jb").disabled=true;$("jb").textContent="جاري الإرسال...";
   const id=newNo().replace("HF-","TC-");
-  const o={id,name:v.jn,phone:v.jp,specialty:v.jt,exp:$("je").value,center:$("jc").value,village:$("jv").value.trim(),about:$("ja").value.trim(),status:TSTATUS[0],createdAt:Date.now()};
+  const o={id,name:v.jn,phone:v.jp,specialty:v.jt,exp:$("je").value,gov:$("jg").value,center:$("jc").value,village:$("jv").value.trim(),about:$("ja").value.trim(),status:TSTATUS[0],createdAt:Date.now()};
   try{await insertRow("technicians",o)}
   catch(x){$("jfe").textContent="تعذر إرسال الطلب، حاول مرة أخرى";$("jb").disabled=false;$("jb").textContent="إرسال طلب الانضمام";return}
   $("jno").textContent=id;$("jf").reset();$("jb").disabled=false;$("jb").textContent="إرسال طلب الانضمام";$("jf").hidden=true;$("jok").hidden=false;
@@ -338,7 +371,12 @@ async function insertRow(t,o){
   const p={...o,createdAt:firebase.firestore.FieldValue.serverTimestamp()};
   await fs.collection(t).doc(o.id).set(p);
 }
-async function setStatus(t,id,v){await fs.collection(t).doc(id).update({status:v})}
+async function setStatus(t,id,v){
+  await fs.collection(t).doc(id).update({status:v});
+  if(t==="technicians"){const o=trows.find(x=>x.id===id),r=fs.collection("public_techs").doc(id),inc=firebase.firestore.FieldValue.increment;
+    if(v==="مقبول"&&o)await r.set({id,name:o.name,specialty:o.specialty,gov:o.gov||"",center:o.center||"",exp:o.exp||"",ratingSum:inc(0),ratingCount:inc(0)},{merge:true});
+    else await r.delete().catch(()=>{})}
+}
 function ping(t){try{const c=new(window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator();o.connect(c.destination);o.frequency.value=880;o.start();o.stop(c.currentTime+.25)}catch(e){}try{if(Notification.permission==="granted")new Notification("هاتلي فني",{body:t})}catch(e){}}
 let unsubs=[],authReady=false,cur=null;
 function listen(){
@@ -348,7 +386,7 @@ function listen(){
     if(!init&&sn.docChanges().some(c=>c.type==="added"&&!c.doc.metadata.hasPendingWrites))ping(label);
     init=false;render();
   },e=>console.error(e))};
-  unsubs=[mk("requests",v=>{rows=v},"وصل طلب عميل جديد"),mk("technicians",v=>{trows=v},"وصل طلب انضمام فني جديد")];
+  unsubs=[mk("requests",v=>{rows=v},"وصل طلب عميل جديد"),mk("technicians",v=>{trows=v},"وصل طلب انضمام فني جديد"),mk("ratings",v=>{rrows=v},"وصل تقييم جديد")];
 }
 function enterAdmin(){
   if(!fb){view("login");$("le").textContent="لم يتم ربط Firebase بعد";return}
@@ -364,7 +402,58 @@ $("lf").onsubmit=async e=>{
 };
 $("lo").onclick=async()=>{unsubs.forEach(u=>u());unsubs=[];rows=[];trows=[];if(auth)await auth.signOut();view("login")};
 $("ab").addEventListener("click",()=>history.replaceState(null,"",location.pathname));
-function route(){location.hash==="#admin"?enterAdmin():view("home")}
+/* ===== الفنيين المعتمدين / الدفع / التقييمات ===== */
+$("feeNote").textContent="رسوم الخدمة "+FEE+" جنيه، وبتتدفع بعد ما نوفرلك الفني.";
+if(/^\d{11,15}$/.test(TEAM_WHATSAPP)){$("fw").href="https://wa.me/"+TEAM_WHATSAPP;$("fw").hidden=false}
+function renderPT(){
+  $("ptw").hidden=!pubs.length;
+  $("pt").innerHTML=pubs.map(p=>{const n=p.ratingCount||0,a=n?(p.ratingSum/n).toFixed(1):null,ic=(TYPES.find(t=>t[1]===p.specialty)||["🛠️"])[0];
+    return`<div class="c"><div class="i">${ic}</div><div style="font-weight:800">${esc(p.name)}</div><div style="color:var(--mut);font-size:14px">${esc(p.specialty)} — ${esc(p.center||p.gov||"")}</div><div style="margin-top:6px;color:var(--l2);font-weight:800">${a?"★ "+a+" <small style='color:var(--mut)'>("+n+")</small>":"<small style='color:var(--mut)'>فني جديد</small>"}</div></div>`}).join("");
+}
+if(fs)fs.collection("public_techs").onSnapshot(sn=>{pubs=sn.docs.map(d=>({id:d.id,...d.data()}));renderPT();if(!$("admin").hidden)render()},()=>{});
+function extra(o){
+  const base=location.origin+location.pathname,ph="2"+o.phone.replace(/^0/,"");
+  const pay="تم توفير فني لطلبك رقم "+o.id+" ✅\nلتأكيد الطلب حوّل "+FEE+" جنيه على "+PAY_METHOD+" رقم "+PAY_NUMBER+"، وابعت صورة التحويل على واتساب: https://wa.me/"+TEAM_WHATSAPP;
+  const rate="شكرًا لاختيارك هاتلي فني 🙏\nقيّم الفني من هنا: "+base+"#rate="+o.id;
+  const sel='<select data-asg="'+esc(o.id)+'"><option value="">الفني المعيّن</option>'+pubs.map(p=>'<option value="'+esc(p.id)+'"'+(o.tech&&o.tech.id===p.id?" selected":"")+">"+esc(p.name)+" - "+esc(p.specialty)+"</option>").join("")+"</select>";
+  const lk=(t,m)=>'<a class="btn s o" target="_blank" rel="noopener" href="https://wa.me/'+ph+"?text="+encodeURIComponent(m)+'">'+t+"</a>";
+  return sel+lk("طلب الدفع",pay)+lk("رابط التقييم",rate);
+}
+function renderRate(){
+  const L={pending:"بانتظار المراجعة",approved:"مقبول",rejected:"مرفوض"};
+  const q=ar2en($("q").value.trim()).toLowerCase(),s=$("fs").value;
+  $("cnt").innerHTML=Object.keys(L).map(k=>`<span class="tg">${L[k]}: ${rrows.filter(o=>o.status===k).length}</span>`).join("");
+  const l=rrows.filter(o=>(!s||L[o.status]===s)&&(!q||String(o.orderId).toLowerCase().includes(q)));
+  $("ls").innerHTML=l.length?l.map(o=>{const r=rows.find(x=>x.id===o.orderId);
+    return`<div class="o"><div class="h"><b style="color:var(--l2)">${"★".repeat(o.stars)}${"☆".repeat(5-o.stars)}</b><span class="tg">${esc(o.orderId)}</span></div>
+<div style="margin-top:6px"><span class="tg">${L[o.status]||esc(o.status)}</span> <small>${r?esc(r.name)+" — الفني: "+(r.tech?esc(r.tech.name):"غير معيّن"):"الطلب غير موجود"}</small></div>
+${o.comment?`<p style="margin:8px 0">${esc(o.comment)}</p>`:""}
+${o.status==="pending"?`<div class="a"><button class="btn p s" data-ok="${esc(o.orderId)}">قبول</button><button class="btn s o" data-no="${esc(o.orderId)}">رفض</button></div>`:""}</div>`}).join(""):'<div class="c">لا توجد تقييمات</div>';
+  document.querySelectorAll("[data-ok]").forEach(b=>b.onclick=()=>decide(b.dataset.ok,true));
+  document.querySelectorAll("[data-no]").forEach(b=>b.onclick=()=>decide(b.dataset.no,false));
+}
+async function decide(id,ok){
+  const o=rrows.find(x=>x.orderId===id),r=rows.find(x=>x.id===id);
+  try{
+    if(ok){
+      if(!r||!r.tech){alert("عيّن الفني لهذا الطلب أولًا من تبويب طلبات العملاء");return}
+      const b=fs.batch(),inc=firebase.firestore.FieldValue.increment;
+      b.update(fs.collection("ratings").doc(id),{status:"approved"});
+      b.update(fs.collection("public_techs").doc(r.tech.id),{ratingSum:inc(o.stars),ratingCount:inc(1)});
+      await b.commit();
+    }else await fs.collection("ratings").doc(id).update({status:"rejected"});
+  }catch(e){alert("تعذر التنفيذ")}
+}
+let stars=0;
+document.querySelectorAll("#stars button").forEach(b=>b.onclick=()=>{stars=+b.dataset.v;document.querySelectorAll("#stars button").forEach(x=>x.classList.toggle("on",+x.dataset.v<=stars))});
+$("rf").onsubmit=async e=>{
+  e.preventDefault();const id=$("rid").value.trim();$("rm").textContent="";
+  if(!/^HF-\d{6}-\d{4}$/.test(id)){$("rm").textContent="رقم الطلب غير صحيح";return}
+  if(!stars){$("rm").textContent="اختر عدد النجوم";return}
+  try{await fs.collection("ratings").doc(id).set({orderId:id,stars,comment:$("rc").value.trim().slice(0,500),status:"pending",createdAt:firebase.firestore.FieldValue.serverTimestamp()});$("rf").hidden=true;$("rd").hidden=false}
+  catch(x){$("rm").textContent="تعذر الإرسال، ربما تم تقييم هذا الطلب من قبل"}
+};
+function route(){const h=location.hash;if(h==="#admin")enterAdmin();else if(h.startsWith("#rate=")){$("rid").value=decodeURIComponent(h.slice(6));view("rate")}else view("home")}
 addEventListener("hashchange",route);route();
 </script>
 </body>
